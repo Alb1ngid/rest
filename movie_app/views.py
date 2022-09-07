@@ -14,8 +14,8 @@ def directors_view(request):
         return Response(data=serializer.data)
     else:
         name = request.date.get('name')
-        Director.objects.create(name=name)
-        return Response(data={'massage': ''})
+        director = Director.objects.create(name=name)
+        return Response(data=DirectorSerializer(director).data)
 
 
 @api_view(['GET','PUT','DELETE'])
@@ -32,7 +32,8 @@ def director_item_view(request, id):
         return Response(status=status.HTTP_204_NO_CONTENT)
     else:
         director.name=request.data.get('name')
-        return Response(data={'massage': 'update'}, status=status.HTTP_202_ACCEPTED)
+        director.save()
+        return Response(data=DirectorSerializer(director).data)
 
 
 @api_view(['GET', 'POST'])
@@ -46,10 +47,9 @@ def movies_view(request):
         description=request.data.get('description')
         duration=request.data.get('duration')
         category_id=request.data.get('category_id')
-        Movie.objects.create(title=title,description=description,duration=duration,
+        movie=Movie.objects.create(title=title,description=description,duration=duration,
                             category_id=category_id )
-        return Response(data={'massage':'created'})
-
+        return Response(data=MovieSerializer(movie).data)
 
 @api_view(['GET','PYT','DELETE'])
 def movies_item_view(request, id):
@@ -68,7 +68,8 @@ def movies_item_view(request, id):
         movies.description = request.data.get('description')
         movies.duration = request.data.get('duration')
         movies.category_id = request.data.get('category_id')
-        return Response(data={'massage': 'update'},status=status.HTTP_202_ACCEPTED)
+        movies.save()
+        return Response(data=MovieSerializer(movies).data)
 
 
 
@@ -85,9 +86,9 @@ def reviews_view(request):
         text=request.data.get('text')
         star=request.data.get('star')
         category_id=request.data.get('category_id')
-        Review.objects.create(text=text,stars=star,
+        review = Review.objects.create(text=text,stars=star,
                               category_id=category_id)
-        return Response(data={'massage':''})
+        return Response(data=ReviewSerializer(review).data)
 
 
 @api_view(['GET','PYT','DELETE'])
@@ -106,8 +107,8 @@ def reviews_item_view(request, id):
         movies.text = request.data.get('text')
         movies.star = request.data.get('star')
         movies.category_id = request.data.get('category_id')
-
-        return Response(data={'massage': 'update'},status=status.HTTP_202_ACCEPTED)
+        movies.save()
+        return Response(data=ReviewSerializer(movies).data)
 
 
 @api_view(['GET'])
