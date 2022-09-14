@@ -18,20 +18,20 @@ def directors_view(request):
         return Response(data=DirectorSerializer(director).data)
 
 
-@api_view(['GET','PUT','DELETE'])
+@api_view(['GET', 'PUT', 'DELETE'])
 def director_item_view(request, id):
     try:
         director = Director.objects.get(id=id)
     except Director.DoesNotExist:
         return Response(data={'ERROR': 'Director not found'}, status=status.HTTP_404_NOT_FOUND)
-    if request.method=='GET':
+    if request.method == 'GET':
         serializer = DirectorSerializer(director)
         return Response(data=serializer.data)
-    elif request.method=='DELETE':
+    elif request.method == 'DELETE':
         director.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     else:
-        director.name=request.data.get('name')
+        director.name = request.data.get('name')
         director.save()
         return Response(data=DirectorSerializer(director).data)
 
@@ -43,15 +43,16 @@ def movies_view(request):
         serializer = MovieSerializer(movies, many=True)
         return Response(data=serializer.data)
     else:
-        title=request.data.get('title')
-        description=request.data.get('description')
-        duration=request.data.get('duration')
-        category_id=request.data.get('category_id')
-        movie=Movie.objects.create(title=title,description=description,duration=duration,
-                            category_id=category_id )
+        title = request.data.get('title')
+        description = request.data.get('description')
+        duration = request.data.get('duration')
+        category_id = request.data.get('category_id')
+        movie = Movie.objects.create(title=title, description=description, duration=duration,
+                                     category_id=category_id)
         return Response(data=MovieSerializer(movie).data)
 
-@api_view(['GET','PYT','DELETE'])
+
+@api_view(['GET', 'PYT', 'DELETE'])
 def movies_item_view(request, id):
     try:
         movies = Movie.objects.get(id=id)
@@ -60,7 +61,7 @@ def movies_item_view(request, id):
     if request.method == 'GET':
         serializer = MovieSerializer(movies)
         return Response(data=serializer.data)
-    elif request.method =='DELETE':
+    elif request.method == 'DELETE':
         movies.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     else:
@@ -72,35 +73,31 @@ def movies_item_view(request, id):
         return Response(data=MovieSerializer(movies).data)
 
 
-
-
-
-
-@api_view(['GET','POST'])
+@api_view(['GET', 'POST'])
 def reviews_view(request):
-    if request.method=='GET':
+    if request.method == 'GET':
         reviews = Review.objects.all()
         serializer = ReviewSerializer(reviews, many=True)
         return Response(data=serializer.data)
     else:
-        text=request.data.get('text')
-        star=request.data.get('star')
-        category_id=request.data.get('category_id')
-        review = Review.objects.create(text=text,stars=star,
-                              category_id=category_id)
+        text = request.data.get('text')
+        star = request.data.get('star')
+        category_id = request.data.get('category_id')
+        review = Review.objects.create(text=text, stars=star,
+                                       category_id=category_id)
         return Response(data=ReviewSerializer(review).data)
 
 
-@api_view(['GET','PYT','DELETE'])
+@api_view(['GET', 'PYT', 'DELETE'])
 def reviews_item_view(request, id):
     try:
         movies = Review.objects.get(id=id)
     except Review.DoesNotExist:
         return Response(data={'ERROR': 'Review not found'}, status=status.HTTP_404_NOT_FOUND)
-    if request.method=='GET':
+    if request.method == 'GET':
         serializer = ReviewSerializer(movies)
         return Response(data=serializer.data)
-    elif request.method=='DELETE':
+    elif request.method == 'DELETE':
         movies.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     else:

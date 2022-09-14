@@ -1,1 +1,81 @@
-\
+settings:
+install:
+'rest_framework_authtoken'
+'users'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES':[
+    'rest_framework.authentication.TokenAuthentication'
+    ]
+}
+
+
+
+urls.py:
+from users import views as user_views
+    path('api/v1/register/', user_views.register_view),
+    path('api/v1/authorization/', user_views.authorization_view),
+
+
+
+
+                        users:view:
+from django.contrib.auth.models import User
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from users.serializers import UserCreateSerializer, UserSerializer
+from django.contrib.auth import authenticate
+from rest_framework.authtoken.models import Token
+from rest_framework.views import APIView
+
+
+@api_view(['POST'])
+def register_view(request):
+    serializer = UserCreateSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    user = User.objects.create_user(**serializer.validated_data)
+    return Response({'message': 'user created',
+                     'data': UserSerializer(user).data})
+
+
+@api_view(['POST'])
+def authorization_view(request):
+    user = authenticate(**request.data)
+    if user:
+        try:
+            token = Token.objects.get(user=user)
+        except Token.DoesNotExist:
+            token = Token.objects.create(user=user)
+        return Response(data={'key': token.key})
+    return Response(status=401)
+
+
+
+
+
+
+                    users:
+                    create py
+                    serialize:
+from django.contrib.auth.models import User
+from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
+
+
+class UserCreateSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
+    email = serializers.CharField()
+    is_active = False
+
+    def validate_username(self, username):
+        if User.objects.filter(username=username):
+            raise ValidationError('User already exists!!!')
+        return username
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = 'id username first_name last_name is_active'.split()
+
